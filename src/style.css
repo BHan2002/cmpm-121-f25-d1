@@ -40,3 +40,23 @@ button.pressed {
   white-space: nowrap !important;
   border: 0 !important;
 }
+
+/* Layout for controls */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+/* Simple counter styling */
+.counter {
+  font-size: 20px;
+  min-width: 40px;
+  text-align: center;
+  display: inline-block;
+}
+
+.btn-label {
+  margin-left: 8px;
+}
