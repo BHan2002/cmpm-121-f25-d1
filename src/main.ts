@@ -18,7 +18,7 @@ const counter = document.getElementById("counter");
 let count = 0;
 
 // Rate: 1 unit per second total
-const RATE_PER_SECOND = 1;
+let RATE_PER_SECOND = 0;
 
 let rafId: number | null = null;
 let lastTs: number | null = null;
@@ -49,6 +49,39 @@ if (btn && counter) {
 }
 
 // Automatically increment counter every second
+
+// New upgrade button to click to increase continuous increment by 1 unit per second
+const upgradeBtn = document.createElement("button");
+upgradeBtn.className = "btn";
+upgradeBtn.id = "upgradeBtn";
+upgradeBtn.innerHTML = `
+  <span aria-hidden="true">🍌</span>
+  <span class="btn-label">Upgrade</span>
+`;
+document.body.appendChild(upgradeBtn);
+// Initial state: button is disabled
+upgradeBtn.disabled = true;
+
+// Enable button if user can afford upgrade (10 units)
 setInterval(() => {
-  startIncreasing();
-}, 1000);
+  if (count >= 10) {
+    upgradeBtn.disabled = false;
+  } else {
+    upgradeBtn.disabled = true;
+  }
+}, 100);
+
+// Upgrade button click event
+upgradeBtn.addEventListener("click", () => {
+  // Start continuous increment
+  // Subtract cost of upgrade (10 units)
+  if (count >= 10) {
+    count -= 10;
+    if (counter) counter.textContent = count.toFixed(2);
+    // Increment rate by 1 unit per second
+    RATE_PER_SECOND += 1;
+    startIncreasing();
+  } else {
+    alert("Not enough monke! You need at least 10 monke to upgrade.");
+  }
+});
