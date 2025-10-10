@@ -24,3 +24,11 @@ if (btn && counter) {
     setTimeout(() => btn.classList.remove("pressed"), 120);
   });
 }
+
+// Automatically increment counter every second
+setInterval(() => {
+  count += 1;
+  if (counter) {
+    counter.textContent = String(count);
+  }
+}, 1000);
