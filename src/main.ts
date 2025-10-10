@@ -48,8 +48,6 @@ if (btn && counter) {
   });
 }
 
-// Automatically increment counter every second
-
 // New upgrade button to click to increase continuous increment by 1 unit per second
 const upgradeBtn = document.createElement("button");
 upgradeBtn.className = "btn";
