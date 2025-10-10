@@ -3,3 +3,40 @@
   vertical-align: top;
   border: 1px solid salmon;
 }
+
+button,
+button.btn {
+  padding: 12px 24px; /* increases click/touch area */
+  font-size: 18px; /* larger label text */
+  min-width: 160px; /* gives a consistent width */
+  min-height: 48px; /* meets mobile touch-size guidelines */
+  border-radius: 8px; /* optional, for a friendlier shape */
+}
+button {
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+button:hover,
+button:focus {
+  transform: scale(1.05);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+/* Visual feedback when the button is actively pressed */
+button:active,
+button.pressed {
+  transform: scale(0.98);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
+}
+
+/* Utility for screen-reader-only text (keeps live region accessible but hidden) */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
