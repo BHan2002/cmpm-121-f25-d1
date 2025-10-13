@@ -1,7 +1,7 @@
 /*----------------------------------------------------------------------------------*/
 // Author: Bryce Han
 // Date: 10/12/2025
-// Purpose: Using Typescript, CSS, and html skills 
+// Purpose: Using Typescript, CSS, and html skills
 //          to learn how to make an incremental clicker game
 /*----------------------------------------------------------------------------------*/
 
@@ -65,8 +65,8 @@ if (btn && counter) {
 
 /* ---------------- DATA-DRIVEN ITEMS ---------------- */
 type ItemEffect =
-  | { kind: "rate"; perLevel: number }        // increases passive rate
-  | { kind: "click"; perLevel: number };      // increases manual click value (optional extension)
+  | { kind: "rate"; perLevel: number } // increases passive rate
+  | { kind: "click"; perLevel: number }; // increases manual click value (optional extension)
 
 interface ItemConfig {
   id: string;
@@ -74,7 +74,7 @@ interface ItemConfig {
   emoji: string;
   baseCost: number;
   costGrowth: number;
-  maxLevel?: number;    // optional cap
+  maxLevel?: number; // optional cap
   effect: ItemEffect;
   description: string;
 }
@@ -87,7 +87,7 @@ const availableItems: ItemConfig[] = [
     baseCost: 10,
     costGrowth: 1.15,
     effect: { kind: "rate", perLevel: 0.10 },
-    description: "Ooooooooh bananaaaah!"
+    description: "Ooooooooh bananaaaah!",
   },
   {
     id: "farm",
@@ -96,8 +96,7 @@ const availableItems: ItemConfig[] = [
     baseCost: 100,
     costGrowth: 1.15,
     effect: { kind: "rate", perLevel: 2.00 },
-    description: "Honest working monkes"
-
+    description: "Honest working monkes",
   },
   {
     id: "factory",
@@ -106,7 +105,7 @@ const availableItems: ItemConfig[] = [
     baseCost: 1000,
     costGrowth: 1.15,
     effect: { kind: "rate", perLevel: 50.00 },
-    description: "It was this or typewriters"
+    description: "It was this or typewriters",
   },
   {
     id: "Banana Labs",
@@ -115,7 +114,7 @@ const availableItems: ItemConfig[] = [
     baseCost: 1500,
     costGrowth: 1.15,
     effect: { kind: "rate", perLevel: 100.00 },
-    description: "Mr. Monke, it's time to cook..."
+    description: "Mr. Monke, it's time to cook...",
   },
   {
     id: "factory",
@@ -124,7 +123,7 @@ const availableItems: ItemConfig[] = [
     baseCost: 2500,
     costGrowth: 1.15,
     effect: { kind: "rate", perLevel: 500.00 },
-    description: "Holy bananas? Sign me up :)"
+    description: "Holy bananas? Sign me up :)",
   },
 ];
 
@@ -143,7 +142,7 @@ class ShopItem {
 
     const card = document.createElement("div");
     card.className = "shop-item";
-    
+
     const tooltip = document.createElement("div");
     tooltip.className = "tooltip";
     tooltip.textContent = conf.description;
@@ -158,7 +157,7 @@ class ShopItem {
 
     this.levelEl = document.createElement("span");
     this.levelEl.className = "shop-level";
-    this.levelEl.textContent = ` Lv. ${this.level}`+ " Cost: ";
+    this.levelEl.textContent = ` Lv. ${this.level}` + " Cost: ";
 
     this.priceEl = document.createElement("span");
     this.priceEl.className = "shop-price";
@@ -169,11 +168,10 @@ class ShopItem {
     this.button.appendChild(this.priceEl);
     card.appendChild(this.button);
     shop.appendChild(card);
-    card.appendChild(tooltip);           // Attaches to the wrapper
+    card.appendChild(tooltip); // Attaches to the wrapper
     shop.appendChild(card);
 
     this.button.addEventListener("click", () => this.buy());
-
   }
 
   canAfford() {
@@ -183,7 +181,9 @@ class ShopItem {
 
   buy() {
     if (!this.canAfford()) {
-      alert(`Not enough monke! Need ${fmt(this.cost)} 🐵 for ${this.conf.label}.`);
+      alert(
+        `Not enough monke! Need ${fmt(this.cost)} 🐵 for ${this.conf.label}.`,
+      );
       return;
     }
     // pay
@@ -215,13 +215,14 @@ class ShopItem {
   }
 
   updateDisabled() {
-    const reachedMax = this.conf.maxLevel != null && this.level >= this.conf.maxLevel;
+    const reachedMax = this.conf.maxLevel != null &&
+      this.level >= this.conf.maxLevel;
     this.button.disabled = reachedMax || count < this.cost;
   }
 }
 
 /* ---------------- BUILD SHOP FROM DATA ---------------- */
-const shopItems: ShopItem[] = availableItems.map(conf => new ShopItem(conf));
+const shopItems: ShopItem[] = availableItems.map((conf) => new ShopItem(conf));
 
 /* Enable/disable items by looping the array */
 setInterval(() => {
@@ -234,7 +235,8 @@ updateCounters();
 /* ---------------- DARK MODE TOGGLE ---------------- */
 (function mountThemeToggle() {
   const saved = localStorage.getItem("theme");
-  const prefersDark = window.matchMedia?.("(prefers-color-scheme: dark)").matches;
+  const prefersDark = window.matchMedia?.("(prefers-color-scheme: dark)")
+    .matches;
   if (saved === "dark" || (!saved && prefersDark)) {
     document.documentElement.classList.add("dark");
   }
@@ -244,7 +246,9 @@ updateCounters();
   const setUI = () => {
     const isDark = document.documentElement.classList.contains("dark");
     btn.innerHTML = `<span aria-hidden="true">${isDark ? "🌙" : "☀️"}</span>
-                     <span class="btn-label">${isDark ? "Dark" : "Light"}</span>`;
+                     <span class="btn-label">${
+      isDark ? "Dark" : "Light"
+    }</span>`;
     btn.setAttribute("aria-pressed", isDark ? "true" : "false");
     btn.title = "Toggle dark mode";
   };
