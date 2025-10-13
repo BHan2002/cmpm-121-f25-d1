@@ -1,15 +1,15 @@
-//----------------------------------------------------------------------------------//
+/*----------------------------------------------------------------------------------*/
 // Author: Bryce Han
 // Date: 10/12/2025
 // Purpose: Using Typescript, CSS, and html skills 
 //          to learn how to make an incremental clicker game
-//----------------------------------------------------------------------------------//
+/*----------------------------------------------------------------------------------*/
 
 // import title from "./Monkeee.png";
 import "./style.css";
 // <p>Monke Clicker: <img src="${title}" class="icon" /></p>
 
-//---Layout-------------------------------------------------------------------------//
+/*---Layout-------------------------------------------------------------------------*/
 document.body.innerHTML = `
   <div class="controls">
     <p>Monke Clicker: </p>
@@ -76,12 +76,56 @@ interface ItemConfig {
   costGrowth: number;
   maxLevel?: number;    // optional cap
   effect: ItemEffect;
+  description: string;
 }
 
 const availableItems: ItemConfig[] = [
-  { id: "banana", label: "Banana", emoji: "🍌", baseCost: 10, costGrowth: 1.15, effect: { kind: "rate", perLevel: 0.10 } },
-  { id: "farm",   label: "Banana Farm ",  emoji: "🌴", baseCost: 100, costGrowth: 1.15, effect: { kind: "rate", perLevel: 2.00 } },
-  { id: "factory",    label: "Banana Factory ",   emoji: "🏭", baseCost: 1000, costGrowth: 1.15, effect: { kind: "rate", perLevel: 50.00 } },
+  {
+    id: "banana",
+    label: "Banana",
+    emoji: "🍌",
+    baseCost: 10,
+    costGrowth: 1.15,
+    effect: { kind: "rate", perLevel: 0.10 },
+    description: "Ooooooooh bananaaaah!"
+  },
+  {
+    id: "farm",
+    label: "Banana Farm ",
+    emoji: "🌴",
+    baseCost: 100,
+    costGrowth: 1.15,
+    effect: { kind: "rate", perLevel: 2.00 },
+    description: "Honest working monkes"
+
+  },
+  {
+    id: "factory",
+    label: "Banana Factory ",
+    emoji: "🏭",
+    baseCost: 1000,
+    costGrowth: 1.15,
+    effect: { kind: "rate", perLevel: 50.00 },
+    description: "It was this or typewriters"
+  },
+  {
+    id: "Banana Labs",
+    label: "Banana Labs ",
+    emoji: "🧪",
+    baseCost: 1500,
+    costGrowth: 1.15,
+    effect: { kind: "rate", perLevel: 100.00 },
+    description: "Mr. Monke, it's time to cook..."
+  },
+  {
+    id: "factory",
+    label: "Banana Shrine ",
+    emoji: "⛩️",
+    baseCost: 2500,
+    costGrowth: 1.15,
+    effect: { kind: "rate", perLevel: 500.00 },
+    description: "Holy bananas? Sign me up :)"
+  },
 ];
 
 /* ---------------- ITEM RUNTIME MODEL---------------- */
@@ -99,6 +143,10 @@ class ShopItem {
 
     const card = document.createElement("div");
     card.className = "shop-item";
+    
+    const tooltip = document.createElement("div");
+    tooltip.className = "tooltip";
+    tooltip.textContent = conf.description;
 
     this.button = document.createElement("button");
     this.button.className = "btn shop-btn";
@@ -121,8 +169,11 @@ class ShopItem {
     this.button.appendChild(this.priceEl);
     card.appendChild(this.button);
     shop.appendChild(card);
+    card.appendChild(tooltip);           // Attaches to the wrapper
+    shop.appendChild(card);
 
     this.button.addEventListener("click", () => this.buy());
+
   }
 
   canAfford() {
