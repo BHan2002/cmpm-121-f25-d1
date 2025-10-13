@@ -94,6 +94,15 @@ class UpgradeButton {
       RATE_PER_SECOND += this.rateIncrease;
       if (counter) counter.textContent = count.toFixed(2);
       if (rateCounter) rateCounter.textContent = `🐵Rate: ${RATE_PER_SECOND.toFixed(2)}/s`;
+      // Update Cost of upgrades
+      this.cost *= 1.15;
+      // If cost is >=100 compact the cost
+      const displayCost = this.cost >= 1000
+      ? Intl.NumberFormat("en", { notation: "compact" }).format(this.cost)
+      : this.cost.toFixed(2);
+      this.element.innerHTML = `
+      <span class="btn-label">${this.label}: ${displayCost} 🐵</span>
+      `;
 
       startIncreasing();
     } else {
@@ -104,6 +113,9 @@ class UpgradeButton {
 // =====================
 // Create Upgrades
 // =====================
+let bananaUpCost = 10;
+let farmUpCost = 100;
+let factoryUpCost = 1000;
 const bananaUpgrade = new UpgradeButton("Banana", "🍌", 10, 0.1);
 const farmUpgrade = new UpgradeButton("Farm", "🌴", 100, 2);
 const factoryUpgrade = new UpgradeButton("Factory", "🏭", 1000, 50);
