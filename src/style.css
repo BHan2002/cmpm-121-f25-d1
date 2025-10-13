@@ -1,3 +1,37 @@
+
+/* base theme variables */
+:root {
+  --bg: #ffffff;
+  --text: #111827;
+  --muted: #6b7280;
+  --card: #f3f4f6;
+  --accent: #00449f;
+  --btn-bg: #e5e7eb;
+  --btn-bg-hover: #d1d5db;
+  --btn-text: #111827;
+  color-scheme: light;
+}
+
+/* dark theme overrides */
+.dark {
+  --bg: #0b1020;
+  --text: #e5e7eb;
+  --muted: #9ca3af;
+  --card: #111827;
+  --accent: #60a5fa;
+  --btn-bg: #1f2937;
+  --btn-bg-hover: #374151;
+  --btn-text: #e5e7eb;
+  color-scheme: dark;
+}
+
+/* apply vars */
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  transition: background-color .2s ease, color .2s ease;
+}
+
 .icon {
   width: 64px;
   vertical-align: top;
@@ -59,4 +93,18 @@ button.pressed {
 
 .btn-label {
   margin-left: 8px;
+}
+/*Dark Mode theme toggle fixed postition in the bottom right*/
+#themeToggle {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  padding: 0.6rem 1rem;
+  border-radius: 0.6rem;
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  transition: background-color 0.2s ease;
+}
+#themeToggle:hover {
+  background: var(--btn-bg-hover);
 }

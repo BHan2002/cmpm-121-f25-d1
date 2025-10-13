@@ -1,10 +1,10 @@
-import exampleIconUrl from "./noun-paperclip-7598668-00449F.png";
+// import title from "./Monkeee.png";
 import "./style.css";
-
+// <p>Monke Clicker: <img src="${title}" class="icon" /></p>
 document.body.innerHTML = `
-  <p>Monke Clicker: <img src="${exampleIconUrl}" class="icon" /></p>
   <div class="controls">
-    <button class="btn" id="likeBtn">
+    <p>Monke Clicker: </p>
+    <button class="btn" id="monkeBtn">
       <span aria-hidden="true">🐵</span>
       <span class="btn-label">Monke</span>
     </button>
@@ -14,7 +14,7 @@ document.body.innerHTML = `
 `;
 
 // Incrementing counter logic using requestAnimationFrame
-const btn = document.getElementById("likeBtn") as HTMLButtonElement | null;
+const btn = document.getElementById("monkeBtn") as HTMLButtonElement | null;
 const counter = document.getElementById("counter");
 rateCounter.textContent = `🐵Rate: 0.00/s`
 let count = 0;  
@@ -119,3 +119,50 @@ let factoryUpCost = 1000;
 const bananaUpgrade = new UpgradeButton("Banana", "🍌", 10, 0.1);
 const farmUpgrade = new UpgradeButton("Farm", "🌴", 100, 2);
 const factoryUpgrade = new UpgradeButton("Factory", "🏭", 1000, 50);
+//////////////////////
+/// Dark Mode Logic///
+//////////////////////
+// Respect system preference on first visit, then persist
+const savedTheme = localStorage.getItem("theme");
+const prefersDark = window.matchMedia?.("(prefers-color-scheme: dark)").matches;
+if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+  document.documentElement.classList.add("dark");
+}
+
+// Build a toggle button
+const themeBtn = document.createElement("button");
+themeBtn.className = "btn";
+themeBtn.id = "themeToggle";
+themeBtn.setAttribute("aria-pressed", document.documentElement.classList.contains("dark") ? "true" : "false");
+themeBtn.title = "Toggle dark mode";
+updateThemeBtnLabel();
+
+document.body.appendChild(themeBtn);
+
+themeBtn.addEventListener("click", () => {
+  const isDark = document.documentElement.classList.toggle("dark");
+  localStorage.setItem("theme", isDark ? "dark" : "light");
+  themeBtn.setAttribute("aria-pressed", isDark ? "true" : "false");
+  updateThemeBtnLabel();
+});
+
+// optional: live-update if system theme changes and user hasn’t chosen
+if (!savedTheme && window.matchMedia) {
+  const mq = window.matchMedia("(prefers-color-scheme: dark)");
+  mq.addEventListener?.("change", (e) => {
+    if (!localStorage.getItem("theme")) {
+      document.documentElement.classList.toggle("dark", e.matches);
+      themeBtn.setAttribute("aria-pressed", e.matches ? "true" : "false");
+      updateThemeBtnLabel();
+    }
+  });
+}
+
+function updateThemeBtnLabel() {
+  const isDark = document.documentElement.classList.contains("dark");
+  themeBtn.innerHTML = `
+    <span aria-hidden="true">${isDark ? "🌙" : "☀️"}</span>
+    <span class="btn-label">${isDark ? "Dark" : "Light"}</span>
+  `;
+  themeBtn.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to dark mode");
+}
