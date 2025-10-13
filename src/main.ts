@@ -235,7 +235,7 @@ updateCounters();
 /* ---------------- DARK MODE TOGGLE ---------------- */
 (function mountThemeToggle() {
   const saved = localStorage.getItem("theme");
-  const prefersDark = window.matchMedia?.("(prefers-color-scheme: dark)")
+  const prefersDark = globalThis.matchMedia?.("(prefers-color-scheme: dark)")
     .matches;
   if (saved === "dark" || (!saved && prefersDark)) {
     document.documentElement.classList.add("dark");
