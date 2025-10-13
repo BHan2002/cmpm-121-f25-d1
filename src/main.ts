@@ -1,6 +1,15 @@
+//----------------------------------------------------------------------------------//
+// Author: Bryce Han
+// Date: 10/12/2025
+// Purpose: Using Typescript, CSS, and html skills 
+//          to learn how to make an incremental clicker game
+//----------------------------------------------------------------------------------//
+
 // import title from "./Monkeee.png";
 import "./style.css";
 // <p>Monke Clicker: <img src="${title}" class="icon" /></p>
+
+//---Layout-------------------------------------------------------------------------//
 document.body.innerHTML = `
   <div class="controls">
     <p>Monke Clicker: </p>
@@ -11,158 +20,188 @@ document.body.innerHTML = `
     <span class="counter" id="counter" role="status" aria-live="polite">0</span>
     <span class="counter" id="rateCounter" role="status" aria-live="polite">0</span>
   </div>
+  <section id="shop" aria-label="Upgrades Shop"></section>
 `;
-
-// Incrementing counter logic using requestAnimationFrame
-const btn = document.getElementById("monkeBtn") as HTMLButtonElement | null;
-const counter = document.getElementById("counter");
-rateCounter.textContent = `🐵Rate: 0.00/s`
-let count = 0;  
-
+/*---Variables----------------------------------------------------------------------*/
+let count = 0;
 let RATE_PER_SECOND = 0;
-
 let rafId: number | null = null;
 let lastTs: number | null = null;
-// =====================
-// Animation Loop - Makes 'number go up' smooth
-// =====================
+
+const btn = document.getElementById("monkeBtn") as HTMLButtonElement | null;
+const counter = document.getElementById("counter")!;
+const rateCounter = document.getElementById("rateCounter")!;
+const shop = document.getElementById("shop")!;
+/*---Helpers---------------------------------------------------------------*/
+const fmt = (n: number, decimals = 2) => n.toFixed(decimals);
+
+function updateCounters() {
+  counter.textContent = fmt(count);
+  rateCounter.textContent = `🐵Rate: ${fmt(RATE_PER_SECOND)}/s`;
+}
+
 function step(now: number) {
   if (lastTs == null) lastTs = now;
-  const deltaMs = now - lastTs;
+  const deltaSec = (now - lastTs) / 1000;
   lastTs = now;
-  // convert ms -> seconds
-  const deltaSec = deltaMs / 1000;
-  // increase by RATE_PER_SECOND * elapsedSeconds
   count += RATE_PER_SECOND * deltaSec;
-  if (counter) counter.textContent = count.toFixed(2);
+  updateCounters();
   rafId = requestAnimationFrame(step);
 }
 
 function startIncreasing() {
-  if (rafId != null) return; // already running
+  if (rafId != null) return;
   lastTs = null;
   rafId = requestAnimationFrame(step);
 }
 
-// =====================
-// Click button logic - Counter increment on button click
-// =====================
+/* Manual click */
 if (btn && counter) {
   btn.addEventListener("click", () => {
     count += 1;
     if (counter) counter.textContent = String(count);
   });
 }
-// =====================
-// UpgradeButton Class
-// =====================
-class UpgradeButton {
-  element: HTMLButtonElement;
-  cost: number;
-  rateIncrease: number;
+
+/* ---------------- DATA-DRIVEN ITEMS ---------------- */
+type ItemEffect =
+  | { kind: "rate"; perLevel: number }        // increases passive rate
+  | { kind: "click"; perLevel: number };      // increases manual click value (optional extension)
+
+interface ItemConfig {
+  id: string;
   label: string;
+  emoji: string;
+  baseCost: number;
+  costGrowth: number;
+  maxLevel?: number;    // optional cap
+  effect: ItemEffect;
+}
 
-  constructor(label: string, emoji: string, cost: number, rateIncrease: number) {
-    this.label = label;
-    this.cost = cost;
-    this.rateIncrease = rateIncrease;
+const availableItems: ItemConfig[] = [
+  { id: "banana", label: "Banana", emoji: "🍌", baseCost: 10, costGrowth: 1.15, effect: { kind: "rate", perLevel: 0.10 } },
+  { id: "farm",   label: "Banana Farm ",  emoji: "🌴", baseCost: 100, costGrowth: 1.15, effect: { kind: "rate", perLevel: 2.00 } },
+  { id: "factory",    label: "Banana Factory ",   emoji: "🏭", baseCost: 1000, costGrowth: 1.15, effect: { kind: "rate", perLevel: 50.00 } },
+];
 
-    this.element = document.createElement("button");
-    this.element.className = "btn";
-    this.element.innerHTML = `
-      <span aria-hidden="true">${emoji}</span>
-      <span class="btn-label">${label + ":" + " " + cost + "🐵"}</span>
-    `;
-    
-    this.element.disabled = true;
-    document.body.appendChild(this.element);
+/* ---------------- ITEM RUNTIME MODEL---------------- */
+class ShopItem {
+  readonly conf: ItemConfig;
+  level = 0;
+  cost: number;
+  button: HTMLButtonElement;
+  priceEl: HTMLSpanElement;
+  levelEl: HTMLSpanElement;
 
-    this.element.addEventListener("click", () => this.onClick());
-    this.startCostCheck();
+  constructor(conf: ItemConfig) {
+    this.conf = conf;
+    this.cost = conf.baseCost;
+
+    const card = document.createElement("div");
+    card.className = "shop-item";
+
+    this.button = document.createElement("button");
+    this.button.className = "btn shop-btn";
+    this.button.id = `item-${conf.id}`;
+
+    const label = document.createElement("span");
+    label.className = "btn-label";
+    label.textContent = `${conf.emoji} ${conf.label}`;
+
+    this.levelEl = document.createElement("span");
+    this.levelEl.className = "shop-level";
+    this.levelEl.textContent = ` Lv. ${this.level}`+ " Cost: ";
+
+    this.priceEl = document.createElement("span");
+    this.priceEl.className = "shop-price";
+    this.priceEl.textContent = `${fmt(this.cost)} 🐵`;
+
+    this.button.appendChild(label);
+    this.button.appendChild(this.levelEl);
+    this.button.appendChild(this.priceEl);
+    card.appendChild(this.button);
+    shop.appendChild(card);
+
+    this.button.addEventListener("click", () => this.buy());
   }
-  
-  startCostCheck() {
-    // Enable or disable depending on player’s money
-    setInterval(() => {
-      this.element.disabled = count < this.cost;
-    }, 100);
-  }
-  
-  onClick() {
-    if (count >= this.cost) {
-      count -= this.cost;
-      RATE_PER_SECOND += this.rateIncrease;
-      if (counter) counter.textContent = count.toFixed(2);
-      if (rateCounter) rateCounter.textContent = `🐵Rate: ${RATE_PER_SECOND.toFixed(2)}/s`;
-      // Update Cost of upgrades
-      this.cost *= 1.15;
-      // If cost is >=100 compact the cost
-      const displayCost = this.cost >= 1000
-      ? Intl.NumberFormat("en", { notation: "compact" }).format(this.cost)
-      : this.cost.toFixed(2);
-      this.element.innerHTML = `
-      <span class="btn-label">${this.label}: ${displayCost} 🐵</span>
-      `;
 
+  canAfford() {
+    if (count <= this.cost) return false;
+    return count >= this.cost;
+  }
+
+  buy() {
+    if (!this.canAfford()) {
+      alert(`Not enough monke! Need ${fmt(this.cost)} 🐵 for ${this.conf.label}.`);
+      return;
+    }
+    // pay
+    count -= this.cost;
+
+    // apply effect
+    if (this.conf.effect.kind === "rate") {
+      RATE_PER_SECOND += this.conf.effect.perLevel;
       startIncreasing();
-    } else {
-      alert(`Not enough monke! You need at least ${this.cost} monke for ${this.label}.`);
+    } else if (this.conf.effect.kind === "click") {
+      // If I want to add a click modifier I would put it here :)
     }
+
+    // level up + next cost
+    this.level += 1;
+    if (this.conf.maxLevel == null || this.level < this.conf.maxLevel) {
+      this.cost = parseFloat((this.cost * this.conf.costGrowth).toFixed(2));
+    }
+
+    // UI updates
+    this.levelEl.textContent = ` Lv. ${this.level} Cost: `;
+    this.priceEl.textContent =
+      this.conf.maxLevel != null && this.level >= this.conf.maxLevel
+        ? "MAX"
+        : `${fmt(this.cost)} 🐵`;
+
+    updateCounters();
+    this.updateDisabled();
+  }
+
+  updateDisabled() {
+    const reachedMax = this.conf.maxLevel != null && this.level >= this.conf.maxLevel;
+    this.button.disabled = reachedMax || count < this.cost;
   }
 }
-// =====================
-// Create Upgrades
-// =====================
-let bananaUpCost = 10;
-let farmUpCost = 100;
-let factoryUpCost = 1000;
-const bananaUpgrade = new UpgradeButton("Banana", "🍌", 10, 0.1);
-const farmUpgrade = new UpgradeButton("Farm", "🌴", 100, 2);
-const factoryUpgrade = new UpgradeButton("Factory", "🏭", 1000, 50);
-//////////////////////
-/// Dark Mode Logic///
-//////////////////////
-// Respect system preference on first visit, then persist
-const savedTheme = localStorage.getItem("theme");
-const prefersDark = window.matchMedia?.("(prefers-color-scheme: dark)").matches;
-if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
-  document.documentElement.classList.add("dark");
-}
 
-// Build a toggle button
-const themeBtn = document.createElement("button");
-themeBtn.className = "btn";
-themeBtn.id = "themeToggle";
-themeBtn.setAttribute("aria-pressed", document.documentElement.classList.contains("dark") ? "true" : "false");
-themeBtn.title = "Toggle dark mode";
-updateThemeBtnLabel();
+/* ---------------- BUILD SHOP FROM DATA ---------------- */
+const shopItems: ShopItem[] = availableItems.map(conf => new ShopItem(conf));
 
-document.body.appendChild(themeBtn);
+/* Enable/disable items by looping the array */
+setInterval(() => {
+  for (const item of shopItems) item.updateDisabled();
+}, 100);
 
-themeBtn.addEventListener("click", () => {
-  const isDark = document.documentElement.classList.toggle("dark");
-  localStorage.setItem("theme", isDark ? "dark" : "light");
-  themeBtn.setAttribute("aria-pressed", isDark ? "true" : "false");
-  updateThemeBtnLabel();
-});
+/* Keep counters fresh at boot */
+updateCounters();
 
-// optional: live-update if system theme changes and user hasn’t chosen
-if (!savedTheme && window.matchMedia) {
-  const mq = window.matchMedia("(prefers-color-scheme: dark)");
-  mq.addEventListener?.("change", (e) => {
-    if (!localStorage.getItem("theme")) {
-      document.documentElement.classList.toggle("dark", e.matches);
-      themeBtn.setAttribute("aria-pressed", e.matches ? "true" : "false");
-      updateThemeBtnLabel();
-    }
+/* ---------------- DARK MODE TOGGLE ---------------- */
+(function mountThemeToggle() {
+  const saved = localStorage.getItem("theme");
+  const prefersDark = window.matchMedia?.("(prefers-color-scheme: dark)").matches;
+  if (saved === "dark" || (!saved && prefersDark)) {
+    document.documentElement.classList.add("dark");
+  }
+  const btn = document.createElement("button");
+  btn.id = "themeToggle";
+  btn.className = "btn";
+  const setUI = () => {
+    const isDark = document.documentElement.classList.contains("dark");
+    btn.innerHTML = `<span aria-hidden="true">${isDark ? "🌙" : "☀️"}</span>
+                     <span class="btn-label">${isDark ? "Dark" : "Light"}</span>`;
+    btn.setAttribute("aria-pressed", isDark ? "true" : "false");
+    btn.title = "Toggle dark mode";
+  };
+  setUI();
+  btn.addEventListener("click", () => {
+    const isDark = document.documentElement.classList.toggle("dark");
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+    setUI();
   });
-}
-
-function updateThemeBtnLabel() {
-  const isDark = document.documentElement.classList.contains("dark");
-  themeBtn.innerHTML = `
-    <span aria-hidden="true">${isDark ? "🌙" : "☀️"}</span>
-    <span class="btn-label">${isDark ? "Dark" : "Light"}</span>
-  `;
-  themeBtn.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to dark mode");
-}
+  document.body.appendChild(btn);
+})();
