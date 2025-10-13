@@ -9,15 +9,16 @@ document.body.innerHTML = `
       <span class="btn-label">Monke</span>
     </button>
     <span class="counter" id="counter" role="status" aria-live="polite">0</span>
+    <span class="counter" id="rateCounter" role="status" aria-live="polite">0</span>
   </div>
 `;
 
 // Incrementing counter logic using requestAnimationFrame
 const btn = document.getElementById("likeBtn") as HTMLButtonElement | null;
 const counter = document.getElementById("counter");
+rateCounter.textContent = `Rate: 0.00/s`
 let count = 0;
 
-// Rate: 1 unit per second total
 let RATE_PER_SECOND = 0;
 
 let rafId: number | null = null;
@@ -40,6 +41,7 @@ function startIncreasing() {
   lastTs = null;
   rafId = requestAnimationFrame(step);
 }
+
 // Counter increment on button click
 if (btn && counter) {
   btn.addEventListener("click", () => {
@@ -76,8 +78,10 @@ upgradeBtn.addEventListener("click", () => {
   if (count >= 10) {
     count -= 10;
     if (counter) counter.textContent = count.toFixed(2);
-    // Increment rate by 1 unit per second
-    RATE_PER_SECOND += 1;
+    // Increment rate by 0.1 unit per second
+    RATE_PER_SECOND += 0.1;
+    // Update rate display
+    rateCounter.textContent = `Rate: ${RATE_PER_SECOND.toFixed(2)} /s`;
     startIncreasing();
   } else {
     alert("Not enough monke! You need at least 10 monke to upgrade.");
