@@ -175,7 +175,7 @@ class ShopItem {
   }
 
   canAfford() {
-    if (count <= this.cost) return false;
+    if (count < this.cost) return false;
     return count >= this.cost;
   }
 
