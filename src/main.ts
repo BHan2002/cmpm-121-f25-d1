@@ -2,7 +2,7 @@ import exampleIconUrl from "./noun-paperclip-7598668-00449F.png";
 import "./style.css";
 
 document.body.innerHTML = `
-  <p>Example image asset: <img src="${exampleIconUrl}" class="icon" /></p>
+  <p>Monke Clicker: <img src="${exampleIconUrl}" class="icon" /></p>
   <div class="controls">
     <button class="btn" id="likeBtn">
       <span aria-hidden="true">🐵</span>
@@ -16,14 +16,16 @@ document.body.innerHTML = `
 // Incrementing counter logic using requestAnimationFrame
 const btn = document.getElementById("likeBtn") as HTMLButtonElement | null;
 const counter = document.getElementById("counter");
-rateCounter.textContent = `Rate: 0.00/s`
-let count = 0;
+rateCounter.textContent = `🐵Rate: 0.00/s`
+let count = 0;  
 
 let RATE_PER_SECOND = 0;
 
 let rafId: number | null = null;
 let lastTs: number | null = null;
-
+// =====================
+// Animation Loop - Makes 'number go up' smooth
+// =====================
 function step(now: number) {
   if (lastTs == null) lastTs = now;
   const deltaMs = now - lastTs;
@@ -42,48 +44,66 @@ function startIncreasing() {
   rafId = requestAnimationFrame(step);
 }
 
-// Counter increment on button click
+// =====================
+// Click button logic - Counter increment on button click
+// =====================
 if (btn && counter) {
   btn.addEventListener("click", () => {
     count += 1;
     if (counter) counter.textContent = String(count);
   });
 }
+// =====================
+// UpgradeButton Class
+// =====================
+class UpgradeButton {
+  element: HTMLButtonElement;
+  cost: number;
+  rateIncrease: number;
+  label: string;
 
-// New upgrade button to click to increase continuous increment by 1 unit per second
-const upgradeBtn = document.createElement("button");
-upgradeBtn.className = "btn";
-upgradeBtn.id = "upgradeBtn";
-upgradeBtn.innerHTML = `
-  <span aria-hidden="true">🍌</span>
-  <span class="btn-label">Upgrade</span>
-`;
-document.body.appendChild(upgradeBtn);
-// Initial state: button is disabled
-upgradeBtn.disabled = true;
+  constructor(label: string, emoji: string, cost: number, rateIncrease: number) {
+    this.label = label;
+    this.cost = cost;
+    this.rateIncrease = rateIncrease;
 
-// Enable button if user can afford upgrade (10 units)
-setInterval(() => {
-  if (count >= 10) {
-    upgradeBtn.disabled = false;
-  } else {
-    upgradeBtn.disabled = true;
+    this.element = document.createElement("button");
+    this.element.className = "btn";
+    this.element.innerHTML = `
+      <span aria-hidden="true">${emoji}</span>
+      <span class="btn-label">${label + ":" + " " + cost + "🐵"}</span>
+    `;
+    
+    this.element.disabled = true;
+    document.body.appendChild(this.element);
+
+    this.element.addEventListener("click", () => this.onClick());
+    this.startCostCheck();
   }
-}, 100);
-
-// Upgrade button click event
-upgradeBtn.addEventListener("click", () => {
-  // Start continuous increment
-  // Subtract cost of upgrade (10 units)
-  if (count >= 10) {
-    count -= 10;
-    if (counter) counter.textContent = count.toFixed(2);
-    // Increment rate by 0.1 unit per second
-    RATE_PER_SECOND += 0.1;
-    // Update rate display
-    rateCounter.textContent = `Rate: ${RATE_PER_SECOND.toFixed(2)} /s`;
-    startIncreasing();
-  } else {
-    alert("Not enough monke! You need at least 10 monke to upgrade.");
+  
+  startCostCheck() {
+    // Enable or disable depending on player’s money
+    setInterval(() => {
+      this.element.disabled = count < this.cost;
+    }, 100);
   }
-});
+  
+  onClick() {
+    if (count >= this.cost) {
+      count -= this.cost;
+      RATE_PER_SECOND += this.rateIncrease;
+      if (counter) counter.textContent = count.toFixed(2);
+      if (rateCounter) rateCounter.textContent = `🐵Rate: ${RATE_PER_SECOND.toFixed(2)}/s`;
+
+      startIncreasing();
+    } else {
+      alert(`Not enough monke! You need at least ${this.cost} monke for ${this.label}.`);
+    }
+  }
+}
+// =====================
+// Create Upgrades
+// =====================
+const bananaUpgrade = new UpgradeButton("Banana", "🍌", 10, 0.1);
+const farmUpgrade = new UpgradeButton("Farm", "🌴", 100, 2);
+const factoryUpgrade = new UpgradeButton("Factory", "🏭", 1000, 50);
