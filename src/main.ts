@@ -5,9 +5,7 @@
 //          to learn how to make an incremental clicker game
 /*----------------------------------------------------------------------------------*/
 
-// import title from "./Monkeee.png";
 import "./style.css";
-// <p>Monke Clicker: <img src="${title}" class="icon" /></p>
 
 /*---Layout-------------------------------------------------------------------------*/
 document.body.innerHTML = `
