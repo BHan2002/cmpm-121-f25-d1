@@ -77,54 +77,6 @@ interface ItemConfig {
   description: string;
 }
 
-const availableItems: ItemConfig[] = [
-  {
-    id: "banana",
-    label: "Banana",
-    emoji: "🍌",
-    baseCost: 10,
-    costGrowth: 1.15,
-    effect: { kind: "rate", perLevel: 0.10 },
-    description: "Ooooooooh bananaaaah!",
-  },
-  {
-    id: "farm",
-    label: "Banana Farm ",
-    emoji: "🌴",
-    baseCost: 100,
-    costGrowth: 1.15,
-    effect: { kind: "rate", perLevel: 2.00 },
-    description: "Honest working monkes",
-  },
-  {
-    id: "factory",
-    label: "Banana Factory ",
-    emoji: "🏭",
-    baseCost: 1000,
-    costGrowth: 1.15,
-    effect: { kind: "rate", perLevel: 50.00 },
-    description: "It was this or typewriters",
-  },
-  {
-    id: "Banana Labs",
-    label: "Banana Labs ",
-    emoji: "🧪",
-    baseCost: 1500,
-    costGrowth: 1.15,
-    effect: { kind: "rate", perLevel: 100.00 },
-    description: "Mr. Monke, it's time to cook...",
-  },
-  {
-    id: "factory",
-    label: "Banana Shrine ",
-    emoji: "⛩️",
-    baseCost: 2500,
-    costGrowth: 1.15,
-    effect: { kind: "rate", perLevel: 500.00 },
-    description: "Holy bananas? Sign me up :)",
-  },
-];
-
 /* ---------------- ITEM RUNTIME MODEL---------------- */
 class ShopItem {
   readonly conf: ItemConfig;
@@ -219,7 +171,54 @@ class ShopItem {
     this.button.disabled = reachedMax || count < this.cost;
   }
 }
-
+/*--- available upgrades array ---*/
+const availableItems: ItemConfig[] = [
+  {
+    id: "banana",
+    label: "Banana",
+    emoji: "🍌",
+    baseCost: 10,
+    costGrowth: 1.15,
+    effect: { kind: "rate", perLevel: 0.10 },
+    description: "Ooooooooh bananaaaah!",
+  },
+  {
+    id: "farm",
+    label: "Banana Farm ",
+    emoji: "🌴",
+    baseCost: 100,
+    costGrowth: 1.15,
+    effect: { kind: "rate", perLevel: 2.00 },
+    description: "Honest working monkes",
+  },
+  {
+    id: "factory",
+    label: "Banana Factory ",
+    emoji: "🏭",
+    baseCost: 1000,
+    costGrowth: 1.15,
+    effect: { kind: "rate", perLevel: 50.00 },
+    description: "It was this or typewriters",
+  },
+  {
+    id: "Banana Labs",
+    label: "Banana Labs ",
+    emoji: "🧪",
+    baseCost: 1500,
+    costGrowth: 1.15,
+    effect: { kind: "rate", perLevel: 100.00 },
+    description: "Mr. Monke, it's time to cook...",
+  },
+  {
+    id: "factory",
+    label: "Banana Shrine ",
+    emoji: "⛩️",
+    baseCost: 2500,
+    costGrowth: 1.15,
+    effect: { kind: "rate", perLevel: 500.00 },
+    description: "Holy bananas? Sign me up :)",
+  },
+];
 /* ---------------- BUILD SHOP FROM DATA ---------------- */
 const shopItems: ShopItem[] = availableItems.map((conf) => new ShopItem(conf));
 
