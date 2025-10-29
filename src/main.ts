@@ -42,11 +42,11 @@ class ShopItem {
     tooltip.textContent = conf.description;
 
     this.button = document.createElement("button");
-    this.button.className = "btn shop-btn";
+    this.button.className = "clickButton shop-clickButton";
     this.button.id = `item-${conf.id}`;
 
     const label = document.createElement("span");
-    label.className = "btn-label";
+    label.className = "clickButton-label";
     label.textContent = `${conf.emoji} ${conf.label}`;
 
     this.levelEl = document.createElement("span");
@@ -86,7 +86,7 @@ class ShopItem {
 
     // apply effect
     if (this.conf.effect.kind === "rate") {
-      RATE_PER_SECOND += this.conf.effect.perLevel;
+      INCOME_RATE += this.conf.effect.perLevel;
       startIncreasing();
     } else if (this.conf.effect.kind === "click") {
       // If I want to add a click modifier I would put it here :)
@@ -119,9 +119,9 @@ class ShopItem {
 document.body.innerHTML = `
   <div class="controls">
     <p>Monke Clicker: </p>
-    <button class="btn" id="monkeBtn">
+    <button class="clickButton" id="monkeclickButton">
       <span aria-hidden="true">🐵</span>
-      <span class="btn-label">Monke</span>
+      <span class="clickButton-label">Monke</span>
     </button>
     <span class="counter" id="counter" role="status" aria-live="polite">0</span>
     <span class="counter" id="rateCounter" role="status" aria-live="polite">0</span>
@@ -130,11 +130,13 @@ document.body.innerHTML = `
 `;
 /*---Variables----------------------------------------------------------------------*/
 let count = 0;
-let RATE_PER_SECOND = 0;
-let rafId: number | null = null;
+let INCOME_RATE = 0;
+let animationID: number | null = null;
 let lastTs: number | null = null;
 
-const btn = document.getElementById("monkeBtn") as HTMLButtonElement | null;
+const clickButton = document.getElementById("monkeclickButton") as
+  | HTMLButtonElement
+  | null;
 const counter = document.getElementById("counter")!;
 const rateCounter = document.getElementById("rateCounter")!;
 const shop = document.getElementById("shop")!;
@@ -143,27 +145,27 @@ const fmt = (n: number, decimals = 2) => n.toFixed(decimals);
 
 function updateCounters() {
   counter.textContent = fmt(count);
-  rateCounter.textContent = `🐵Rate: ${fmt(RATE_PER_SECOND)}/s`;
+  rateCounter.textContent = `🐵Rate: ${fmt(INCOME_RATE)}/s`;
 }
 
 function step(now: number) {
   if (lastTs == null) lastTs = now;
   const deltaSec = (now - lastTs) / 1000;
   lastTs = now;
-  count += RATE_PER_SECOND * deltaSec;
+  count += INCOME_RATE * deltaSec;
   updateCounters();
-  rafId = requestAnimationFrame(step);
+  animationID = requestAnimationFrame(step);
 }
 
 function startIncreasing() {
-  if (rafId != null) return;
+  if (animationID != null) return;
   lastTs = null;
-  rafId = requestAnimationFrame(step);
+  animationID = requestAnimationFrame(step);
 }
 
 /* Manual click */
-if (btn && counter) {
-  btn.addEventListener("click", () => {
+if (clickButton && counter) {
+  clickButton.addEventListener("click", () => {
     count += 1;
     if (counter) counter.textContent = String(count);
   });
@@ -236,23 +238,25 @@ updateCounters();
   if (saved === "dark" || (!saved && prefersDark)) {
     document.documentElement.classList.add("dark");
   }
-  const btn = document.createElement("button");
-  btn.id = "themeToggle";
-  btn.className = "btn";
+  const clickButton = document.createElement("button");
+  clickButton.id = "themeToggle";
+  clickButton.className = "clickButton";
   const setUI = () => {
     const isDark = document.documentElement.classList.contains("dark");
-    btn.innerHTML = `<span aria-hidden="true">${isDark ? "🌙" : "☀️"}</span>
-                     <span class="btn-label">${
+    clickButton.innerHTML = `<span aria-hidden="true">${
+      isDark ? "🌙" : "☀️"
+    }</span>
+                     <span class="clickButton-label">${
       isDark ? "Dark" : "Light"
     }</span>`;
-    btn.setAttribute("aria-pressed", isDark ? "true" : "false");
-    btn.title = "Toggle dark mode";
+    clickButton.setAttribute("aria-pressed", isDark ? "true" : "false");
+    clickButton.title = "Toggle dark mode";
   };
   setUI();
-  btn.addEventListener("click", () => {
+  clickButton.addEventListener("click", () => {
     const isDark = document.documentElement.classList.toggle("dark");
     localStorage.setItem("theme", isDark ? "dark" : "light");
     setUI();
   });
-  document.body.appendChild(btn);
+  document.body.appendChild(clickButton);
 })();
