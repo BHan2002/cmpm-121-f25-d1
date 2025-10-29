@@ -6,7 +6,7 @@
 /*----------------------------------------------------------------------------------*/
 
 import "./style.css";
-/* ---------------- DATA-DRIVEN ITEMS ---------------- */
+/* ---------------- TYPES ---------------- */
 type ItemEffect =
   | { kind: "rate"; perLevel: number } // increases passive rate
   | { kind: "click"; perLevel: number }; // increases manual click value
@@ -21,7 +21,6 @@ interface ItemConfig {
   effect: ItemEffect;
   description: string;
 }
-/* ---------------- ITEM RUNTIME MODEL---------------- */
 class ShopItem {
   readonly conf: ItemConfig;
   level = 0;
@@ -115,7 +114,19 @@ class ShopItem {
     this.button.disabled = reachedMax || count < this.cost;
   }
 }
-/*---Layout-------------------------------------------------------------------------*/
+/*--- STATE ----------------------------------------------------------------------*/
+let count = 0;
+let INCOME_RATE = 0;
+let animationID: number | null = null;
+let lastTs: number | null = null;
+
+const clickButton = document.getElementById("monkeclickButton") as
+  | HTMLButtonElement
+  | null;
+const counter = document.getElementById("counter")!;
+const rateCounter = document.getElementById("rateCounter")!;
+const shop = document.getElementById("shop")!;
+/*--- DOM ELEMENTS -------------------------------------------------------------------------*/
 document.body.innerHTML = `
   <div class="controls">
     <p>Monke Clicker: </p>
@@ -128,19 +139,8 @@ document.body.innerHTML = `
   </div>
   <section id="shop" aria-label="Upgrades Shop"></section>
 `;
-/*---Variables----------------------------------------------------------------------*/
-let count = 0;
-let INCOME_RATE = 0;
-let animationID: number | null = null;
-let lastTs: number | null = null;
 
-const clickButton = document.getElementById("monkeclickButton") as
-  | HTMLButtonElement
-  | null;
-const counter = document.getElementById("counter")!;
-const rateCounter = document.getElementById("rateCounter")!;
-const shop = document.getElementById("shop")!;
-/*---Helpers---------------------------------------------------------------*/
+/*--- HELPERS ---------------------------------------------------------------*/
 const fmt = (n: number, decimals = 2) => n.toFixed(decimals);
 
 function updateCounters() {
@@ -162,7 +162,7 @@ function startIncreasing() {
   lastTs = null;
   animationID = requestAnimationFrame(step);
 }
-
+/*--- EVENT LISTENERS ---*/
 /* Manual click */
 if (clickButton && counter) {
   clickButton.addEventListener("click", () => {
@@ -171,7 +171,7 @@ if (clickButton && counter) {
   });
 }
 
-/*--- available upgrades array ---*/
+/*--- GAME DATA ---*/
 const availableItems: ItemConfig[] = [
   {
     id: "banana",
@@ -219,7 +219,7 @@ const availableItems: ItemConfig[] = [
     description: "Holy bananas? Sign me up :)",
   },
 ];
-/* ---------------- BUILD SHOP FROM DATA ---------------- */
+/* ---------------- SHOP INIT & LOOP ---------------- */
 const shopItems: ShopItem[] = availableItems.map((conf) => new ShopItem(conf));
 
 /* Enable/disable items by looping the array */
@@ -230,7 +230,7 @@ setInterval(() => {
 /* Keep counters fresh at boot */
 updateCounters();
 
-/* ---------------- DARK MODE TOGGLE ---------------- */
+/* ---------------- UI FEATURES ---------------- */
 (function mountThemeToggle() {
   const saved = localStorage.getItem("theme");
   const prefersDark = globalThis.matchMedia?.("(prefers-color-scheme: dark)")
