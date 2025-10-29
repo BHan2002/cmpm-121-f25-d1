@@ -64,7 +64,7 @@ if (btn && counter) {
 /* ---------------- DATA-DRIVEN ITEMS ---------------- */
 type ItemEffect =
   | { kind: "rate"; perLevel: number } // increases passive rate
-  | { kind: "click"; perLevel: number }; // increases manual click value (optional extension)
+  | { kind: "click"; perLevel: number }; // increases manual click value
 
 interface ItemConfig {
   id: string;
@@ -184,6 +184,7 @@ class ShopItem {
       );
       return;
     }
+
     // pay
     count -= this.cost;
 
