@@ -6,61 +6,6 @@
 /*----------------------------------------------------------------------------------*/
 
 import "./style.css";
-
-/*---Layout-------------------------------------------------------------------------*/
-document.body.innerHTML = `
-  <div class="controls">
-    <p>Monke Clicker: </p>
-    <button class="btn" id="monkeBtn">
-      <span aria-hidden="true">🐵</span>
-      <span class="btn-label">Monke</span>
-    </button>
-    <span class="counter" id="counter" role="status" aria-live="polite">0</span>
-    <span class="counter" id="rateCounter" role="status" aria-live="polite">0</span>
-  </div>
-  <section id="shop" aria-label="Upgrades Shop"></section>
-`;
-/*---Variables----------------------------------------------------------------------*/
-let count = 0;
-let RATE_PER_SECOND = 0;
-let rafId: number | null = null;
-let lastTs: number | null = null;
-
-const btn = document.getElementById("monkeBtn") as HTMLButtonElement | null;
-const counter = document.getElementById("counter")!;
-const rateCounter = document.getElementById("rateCounter")!;
-const shop = document.getElementById("shop")!;
-/*---Helpers---------------------------------------------------------------*/
-const fmt = (n: number, decimals = 2) => n.toFixed(decimals);
-
-function updateCounters() {
-  counter.textContent = fmt(count);
-  rateCounter.textContent = `🐵Rate: ${fmt(RATE_PER_SECOND)}/s`;
-}
-
-function step(now: number) {
-  if (lastTs == null) lastTs = now;
-  const deltaSec = (now - lastTs) / 1000;
-  lastTs = now;
-  count += RATE_PER_SECOND * deltaSec;
-  updateCounters();
-  rafId = requestAnimationFrame(step);
-}
-
-function startIncreasing() {
-  if (rafId != null) return;
-  lastTs = null;
-  rafId = requestAnimationFrame(step);
-}
-
-/* Manual click */
-if (btn && counter) {
-  btn.addEventListener("click", () => {
-    count += 1;
-    if (counter) counter.textContent = String(count);
-  });
-}
-
 /* ---------------- DATA-DRIVEN ITEMS ---------------- */
 type ItemEffect =
   | { kind: "rate"; perLevel: number } // increases passive rate
@@ -76,7 +21,6 @@ interface ItemConfig {
   effect: ItemEffect;
   description: string;
 }
-
 /* ---------------- ITEM RUNTIME MODEL---------------- */
 class ShopItem {
   readonly conf: ItemConfig;
@@ -171,6 +115,60 @@ class ShopItem {
     this.button.disabled = reachedMax || count < this.cost;
   }
 }
+/*---Layout-------------------------------------------------------------------------*/
+document.body.innerHTML = `
+  <div class="controls">
+    <p>Monke Clicker: </p>
+    <button class="btn" id="monkeBtn">
+      <span aria-hidden="true">🐵</span>
+      <span class="btn-label">Monke</span>
+    </button>
+    <span class="counter" id="counter" role="status" aria-live="polite">0</span>
+    <span class="counter" id="rateCounter" role="status" aria-live="polite">0</span>
+  </div>
+  <section id="shop" aria-label="Upgrades Shop"></section>
+`;
+/*---Variables----------------------------------------------------------------------*/
+let count = 0;
+let RATE_PER_SECOND = 0;
+let rafId: number | null = null;
+let lastTs: number | null = null;
+
+const btn = document.getElementById("monkeBtn") as HTMLButtonElement | null;
+const counter = document.getElementById("counter")!;
+const rateCounter = document.getElementById("rateCounter")!;
+const shop = document.getElementById("shop")!;
+/*---Helpers---------------------------------------------------------------*/
+const fmt = (n: number, decimals = 2) => n.toFixed(decimals);
+
+function updateCounters() {
+  counter.textContent = fmt(count);
+  rateCounter.textContent = `🐵Rate: ${fmt(RATE_PER_SECOND)}/s`;
+}
+
+function step(now: number) {
+  if (lastTs == null) lastTs = now;
+  const deltaSec = (now - lastTs) / 1000;
+  lastTs = now;
+  count += RATE_PER_SECOND * deltaSec;
+  updateCounters();
+  rafId = requestAnimationFrame(step);
+}
+
+function startIncreasing() {
+  if (rafId != null) return;
+  lastTs = null;
+  rafId = requestAnimationFrame(step);
+}
+
+/* Manual click */
+if (btn && counter) {
+  btn.addEventListener("click", () => {
+    count += 1;
+    if (counter) counter.textContent = String(count);
+  });
+}
+
 /*--- available upgrades array ---*/
 const availableItems: ItemConfig[] = [
   {
