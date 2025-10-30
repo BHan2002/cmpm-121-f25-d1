@@ -26,15 +26,40 @@
 
 /* apply vars */
 html, body {
+  height: 100%;
+  margin: 0;
   background: var(--bg);
   color: var(--text);
   transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .icon {
   width: 64px;
   vertical-align: top;
   border: 1px solid salmon;
+}
+
+.mainButton, #monkeclickButton {
+  font-size: 6rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.mainButton:hover, #monkeclickButton:hover {
+  transform: scale(1.15);
+}
+.mainButton:active, #monkeclickButton:active {
+  transform: scale(0.98);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
 }
 
 button,
@@ -77,10 +102,10 @@ button.pressed {
 /* Layout for controls */
 .controls {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 12px;
-  margin-top: 12px;
-  left: 50%;
+  justify-content: center;
+  gap: 1rem;
 }
 
 /* Simple counter styling */
@@ -99,7 +124,6 @@ button.pressed {
 #shop {
   display: flex;
   flex-direction: column;
-  position: absolute;
   align-items: center;
   gap: 1rem;
   margin-top: 2rem;

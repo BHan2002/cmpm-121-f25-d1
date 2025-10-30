@@ -9,13 +9,13 @@ import "./style.css";
 /*--- DOM ELEMENTS -------------------------------------------------------------------------*/
 document.body.innerHTML = `
   <div class="controls">
-    <p>Monke Clicker: </p>
-    <button class="clickButton" id="monkeclickButton">
-      <span aria-hidden="true">🐵</span>
-      <span class="clickButton-label">Monke</span>
+    <button class="clickButton mainButton" id="monkeclickButton" aria-label="Monke">
+      🐵
     </button>
-    <span class="counter" id="counter" role="status" aria-live="polite">0</span>
-    <span class="counter" id="rateCounter" role="status" aria-live="polite">0</span>
+    <div class="stats">
+      <span class="counter" id="counter" role="status" aria-live="polite">0</span>
+      <span class="counter" id="rateCounter" role="status" aria-live="polite">🐵Rate: 0/s</span>
+    </div>
   </div>
   <section id="shop" aria-label="Upgrades Shop"></section>
 `;
