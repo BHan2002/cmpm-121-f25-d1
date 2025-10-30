@@ -40,6 +40,12 @@ body {
   align-items: center;
 }
 
+.utitle {
+  font-size: 30px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
 .icon {
   width: 64px;
   vertical-align: top;
@@ -133,7 +139,6 @@ button.pressed {
 .shop-item {
   position: relative;
   display: inline-block;
-  left: 60%;
 }
 
 .shop-item .tooltip {

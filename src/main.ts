@@ -17,7 +17,10 @@ document.body.innerHTML = `
       <span class="counter" id="rateCounter" role="status" aria-live="polite">🐵Rate: 0/s</span>
     </div>
   </div>
-  <section id="shop" aria-label="Upgrades Shop"></section>
+  <div class = "upgrade-shop-wrapper">
+    <h1 class="utitle">Upgrades</h1>
+    <section id="shop" aria-label="Upgrades Shop"></section>
+  </div>
 `;
 /* ---------------- TYPES ---------------- */
 type ItemEffect =
